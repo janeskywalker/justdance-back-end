@@ -2,7 +2,7 @@
 const mockData = require('./mockData').mockData
 
 
-// show all cities
+// show all studios
 const index = (req, res) => {
     // db.City.find({}, (error, foundCities) => {
     //     if (error) return res.status(500).send(error);
