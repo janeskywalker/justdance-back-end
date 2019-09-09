@@ -11,7 +11,7 @@ const register = (req, res) => {
   const { errors, notValid } = validate(req.body);
 
   const newUser = {
-    id: uuid(),
+    _id: uuid(),
     username: req.body.username,
     email: req.body.email,
     password: req.body.password,
@@ -82,15 +82,19 @@ const register = (req, res) => {
 const login = (req, res) => {
   console.log('logging in on server')
 
+  console.log('body: ', req.body)
+
   const foundUser = mockData.mockUsers.find((user) => {
       return user.email === req.body.email
   });
+
+  console.log('foundUser: ', foundUser)
 
 
   if (foundUser) {
       // give permission, authorization
       req.session.loggedIn = true;
-      req.session.currentUser = { id: foundUser.id };
+      req.session.currentUser = foundUser;
     
       // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
       return res.send(foundUser)
@@ -143,7 +147,7 @@ const verify = (req, res) => {
   // if not loggged in
   if (!req.session.currentUser) return res.status(401).json({ status: 401, message: 'unauthorized' });
   // logged in
-  res.status(200).json({ status: 200, message: `Current user verified. User ID = ${req.session.currentUser.id}` });
+  res.status(200).json({ status: 200, message: `Current user verified. User ID = ${req.session.currentUser._id}` });
 }
 
 

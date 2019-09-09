@@ -23,7 +23,7 @@ const show = (req, res) => {
 //     res.send(foundCity)
 //     });
     const studio = mockData.mockStudios.find((studio) => {
-        return studio.id === req.params.id
+        return studio._id === req.params.id
     })
 
     if (studio) {

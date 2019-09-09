@@ -7,9 +7,9 @@ const createMessage = (req, res) => {
     const studioId = req.body.studioId
 
     const newMessage = {
-        id: uuid(),
+        _id: uuid(),
         content: req.body.content,
-        userId: req.session.currentUser.id,
+        userId: req.session.currentUser._id,
         studioId: studioId,
     };
 
@@ -26,7 +26,7 @@ const createMessage = (req, res) => {
 
 const deleteMessage = (req, res) => {
     mockData.mockMessages = mockData.mockMessages.filter((message) => {
-        return message.id !== req.params.id
+        return message._id !== req.params._id
     })
 
     res.send({ status: 'Success' })

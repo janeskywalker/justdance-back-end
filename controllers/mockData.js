@@ -1,11 +1,11 @@
 const uuid = require('uuid')
 
 module.exports.mockData = {
-        mockUsers: [
+    mockUsers: [
         {
-            id: uuid(),
+            _id: uuid(),
             name: 'Jane',
-            email: 'test@test.com',
+            email: 'jane@test.com',
             avatar: "/assets/avatar.JPG",
         }
     ],
@@ -14,7 +14,7 @@ module.exports.mockData = {
     ],
     mockStudios: [
         {
-            id: uuid(),
+            _id: uuid(),
             name: 'Phoenix Aerial Art & Pole',
             image: 'assets/phoenix.png',
             reviews: [],
@@ -26,7 +26,7 @@ module.exports.mockData = {
         },
 
         {
-            id: uuid(),
+            _id: uuid(),
             name: 'Inspiration Studios',
             image: 'assets/pole.png',
             reviews: [],
@@ -38,7 +38,7 @@ module.exports.mockData = {
         },
 
         {
-            id: uuid(),
+            _id: uuid(),
             name: 'Crunch Fitness',
             image: 'assets/pole2.png',
             reviews: [],
@@ -50,7 +50,7 @@ module.exports.mockData = {
         },
 
         {
-            id: uuid(),
+            _id: uuid(),
             name: "Gypsy Love Belly Dancing",
             image: 'assets/belly.png',
             reviews: [],
@@ -63,7 +63,7 @@ module.exports.mockData = {
 
 
         {
-            id: uuid(),
+            _id: uuid(),
             name: "Albeto's Salsa & Bachata",
             image: 'assets/albeto.png',
             reviews: [],
@@ -76,7 +76,7 @@ module.exports.mockData = {
 
 
         {
-            id: uuid(),
+            _id: uuid(),
             name: "Allegro Salsa Dancing",
             image: 'assets/salsa.png',
             reviews: [],
