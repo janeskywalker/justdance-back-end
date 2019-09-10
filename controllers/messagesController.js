@@ -4,12 +4,13 @@ const uuid = require('uuid')
 
 // creating post for a city
 const createMessage = (req, res) => {
+    console.log("creating message req", req.body)
     const studioId = req.body.studioId
 
     const newMessage = {
         _id: uuid(),
         content: req.body.content,
-        userId: req.session.currentUser._id,
+        userId: req.body.userId,
         studioId: studioId,
     };
 

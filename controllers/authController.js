@@ -19,7 +19,11 @@ const register = (req, res) => {
 
   mockData.mockUsers.push(newUser);
 
-  res.send(newUser)
+  res.send({
+    _id: newUser._id,
+    username: newUser.username,
+    email: newUser.email,
+  })
 
   // Validate Form Data
 //   if (notValid) {
@@ -81,55 +85,52 @@ const register = (req, res) => {
 // POST Login Route
 const login = (req, res) => {
   console.log('logging in on server')
-
   console.log('body: ', req.body)
 
-  const foundUser = mockData.mockUsers.find((user) => {
-      return user.email === req.body.email
-  });
+  // const foundUser = mockData.mockUsers.find((user) => {
+  //     return user.email === req.body.email
+  // });
 
-  console.log('foundUser: ', foundUser)
+  // console.log('foundUser: ', foundUser)
 
 
-  if (foundUser) {
-      // give permission, authorization
-      req.session.loggedIn = true;
-      req.session.currentUser = foundUser;
+  // if (foundUser) {
+  //     req.session.loggedIn = true;
+  //     req.session.currentUser = foundUser;
     
-      // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
-      return res.send(foundUser)
-    } else {
-      return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
+  //     return res.send(foundUser)
+  //   } else {
+  //     return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
+  //   }
+
+
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ status: 400, message: 'Please enter your email and password' });
+  }
+
+  db.User.findOne({email: req.body.email}, (err, foundUser) => {
+    if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
+
+    if (!foundUser) {
+      return res.status(400).json({ status: 400, message: 'Username or password is incorrect'});
     }
 
+    bcrypt.compare(req.body.password, foundUser.password, (err, isMatch) => {
+      if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
 
-//   if (!req.body.email || !req.body.password) {
-//     return res.status(400).json({ status: 400, message: 'Please enter your email and password' });
-//   }
-
-//   db.User.findOne({email: req.body.email}, (err, foundUser) => {
-//     if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
-
-//     if (!foundUser) {
-//       return res.status(400).json({ status: 400, message: 'Username or password is incorrect'});
-//     }
-
-//     bcrypt.compare(req.body.password, foundUser.password, (err, isMatch) => {
-//       if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
-
-//       if (isMatch) {
-//         // give permission, authorization
-//         req.session.loggedIn = true;
-//         req.session.currentUser = { id: foundUser._id };
+      if (isMatch) {
+        // give permission, authorization
+        req.session.loggedIn = true;
+        req.session.currentUser = { id: foundUser._id };
         
-//         // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
-//         return res.send(foundUser)
-//       } else {
-//         return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
-//       }
+        // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
+        return res.send(foundUser)
+      } else {
+        return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
+      }
 
-//     });
-//   });
+    });
+  });
 };
 
 
