@@ -1,7 +1,7 @@
-// const bcrypt = require('bcryptjs');
+const bcrypt = require('bcryptjs');
 // import the validate funtion, do front-end validation
 const validate = require('../validation/register');
-// const db = require('../models');
+const db = require('../models');
 const mockData = require('./mockData').mockData;
 const uuid = require('uuid');
 
@@ -10,126 +10,127 @@ const uuid = require('uuid');
 const register = (req, res) => {
   const { errors, notValid } = validate(req.body);
 
-  const newUser = {
-    _id: uuid(),
-    username: req.body.username,
-    email: req.body.email,
-    password: req.body.password,
+  // const newUser = {
+  //   _id: uuid(),
+  //   username: req.body.username,
+  //   email: req.body.email,
+  //   password: req.body.password,
+  // }
+
+  // mockData.mockUsers.push(newUser);
+
+  // res.send({
+  //   _id: newUser._id,
+  //   username: newUser.username,
+  //   email: newUser.email,
+  // })
+
+  //Validate Form Data
+  if (notValid) {
+    return res.status(400).json({ status: 400, errors });
   }
 
-  mockData.mockUsers.push(newUser);
+  // Verify Account Does Not Already Exist -- email has aready been registered - if user exist
+  db.User.findOne({ email: req.body.email }, (err, foundUser) => {
+    if (err) {
+        return res.status(500).json({
+            status: 500,
+            message: 'Something went wrong. Please try again'
+        });
+    }
 
-  res.send(newUser)
+    if (foundUser) {
+        return res.status(400).json({
+            status: 400,
+            message: 'Email address has already been registered. Please try again'
+        });
+    }
 
-  // Validate Form Data
-//   if (notValid) {
-//     return res.status(400).json({ status: 400, errors });
-//   }
+    // Generate Salt (Asynchronous callback version)
+    bcrypt.genSalt(10, (err, salt) => {
+      if (err) {
+          return res.status(500).json({
+              status: 500,
+              message: 'Something went wrong. Please try again'
+            });
+        }
+      // if (err) throw err;
 
-//   // Verify Account Does Not Already Exist -- email has aready been registered - if user exist
-//   db.User.findOne({ email: req.body.email }, (err, foundUser) => {
-//     if (err) {
-//         return res.status(500).json({
-//             status: 500,
-//             message: 'Something went wrong. Please try again'
-//         });
-//     }
+      // Hash User Password
+      bcrypt.hash(req.body.password, salt, (err, hash) => {
+        if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again'});
 
-//     if (foundUser) {
-//         return res.status(400).json({
-//             status: 400,
-//             message: 'Email address has already been registered. Please try again'
-//         });
-//     }
+        const newUser = {
+          username: req.body.username,
+          email: req.body.email,
+          password: hash,
+        }
 
-//     // Generate Salt (Asynchronous callback version)
-//     bcrypt.genSalt(10, (err, salt) => {
-//       if (err) {
-//           return res.status(500).json({
-//               status: 500,
-//               message: 'Something went wrong. Please try again'
-//             });
-//         }
-//       // if (err) throw err;
+        // now another query to create a user and save it
+        db.User.create(newUser, (err, savedUser) => {
+          // if (err) return res.status(500).json({ status: 500, message: err});
+          if (err) res.send(err)
+          console.log('registering user')
+          console.log(savedUser)
+          // res.status(201).json({ status: 201, message: 'success', savedUser: savedUser});
+          res.send(savedUser)
+        });
+      });
+    });
 
-//       // Hash User Password
-//       bcrypt.hash(req.body.password, salt, (err, hash) => {
-//         if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again'});
-
-//         const newUser = {
-//           username: req.body.username,
-//           email: req.body.email,
-//           password: hash,
-//         }
-
-//         // now another query to create a user and save it
-//         db.User.create(newUser, (err, savedUser) => {
-//           // if (err) return res.status(500).json({ status: 500, message: err});
-//           if (err) res.send(err)
-//           console.log('registering user')
-//           console.log(savedUser)
-//           // res.status(201).json({ status: 201, message: 'success', savedUser: savedUser});
-//           res.send(savedUser)
-//         });
-//       });
-//     });
-
-//   });
+  });
 };
 
 
 // POST Login Route
 const login = (req, res) => {
   console.log('logging in on server')
-
   console.log('body: ', req.body)
 
-  const foundUser = mockData.mockUsers.find((user) => {
-      return user.email === req.body.email
-  });
+  // const foundUser = mockData.mockUsers.find((user) => {
+  //     return user.email === req.body.email
+  // });
 
-  console.log('foundUser: ', foundUser)
+  // console.log('foundUser: ', foundUser)
 
 
-  if (foundUser) {
-      // give permission, authorization
-      req.session.loggedIn = true;
-      req.session.currentUser = foundUser;
+  // if (foundUser) {
+  //     req.session.loggedIn = true;
+  //     req.session.currentUser = foundUser;
     
-      // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
-      return res.send(foundUser)
-    } else {
-      return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
+  //     return res.send(foundUser)
+  //   } else {
+  //     return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
+  //   }
+
+
+  if (!req.body.email || !req.body.password) {
+    return res.status(400).json({ status: 400, message: 'Please enter your email and password' });
+  }
+
+  db.User.findOne({email: req.body.email}, (err, foundUser) => {
+    if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
+
+    if (!foundUser) {
+      return res.status(400).json({ status: 400, message: 'Username or password is incorrect'});
     }
 
+    bcrypt.compare(req.body.password, foundUser.password, (err, isMatch) => {
+      if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
 
-//   if (!req.body.email || !req.body.password) {
-//     return res.status(400).json({ status: 400, message: 'Please enter your email and password' });
-//   }
-
-//   db.User.findOne({email: req.body.email}, (err, foundUser) => {
-//     if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
-
-//     if (!foundUser) {
-//       return res.status(400).json({ status: 400, message: 'Username or password is incorrect'});
-//     }
-
-//     bcrypt.compare(req.body.password, foundUser.password, (err, isMatch) => {
-//       if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
-
-//       if (isMatch) {
-//         // give permission, authorization
-//         req.session.loggedIn = true;
-//         req.session.currentUser = { id: foundUser._id };
+      if (isMatch) {
+        // give permission, authorization
+        req.session.loggedIn = true;
+        req.session.currentUser = { id: foundUser._id };
         
-//         // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
-//         return res.send(foundUser)
-//       } else {
-//         return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
-//       }
+        // return res.status(200).json({ status: 200, message: 'Success', id: foundUser._id  });
+        return res.send(foundUser)
+      } else {
+        return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
+      }
 
-//     });
-//   });
+    });
+  });
 };
 
 
