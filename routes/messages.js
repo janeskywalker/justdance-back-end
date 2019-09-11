@@ -3,20 +3,23 @@ const router = express.Router();
 const ctrl = require('../controllers');
 const authRequired = require('../middleware/authRequired');
 
-// create a post, request body need a city id, url params are usually for get request 
+// create a message, request body need a city id, url params are usually for get request 
 router.post('/', authRequired, ctrl.messages.createMessage)
 
-// delete a post
+// delete a message
 router.delete('/:id', authRequired, ctrl.messages.deleteMessage)
 
-// post index -- get all post
-// router.get('/userposts/:userId', authRequired, ctrl.posts.userPosts)
+// delete a message
+router.put('/:id', authRequired, ctrl.messages.updateMessage)
+
+// message index -- get all message
+// router.get('/usermessages/:userId', authRequired, ctrl.messages.usermessages)
 
 //RESTful routing
-// userss/:id/posts/postid
-// cities/:id/posts/postid
+// userss/:id/messages/messageid
+// cities/:id/messages/messageid
 
-router.get('/studio-posts/:studioId', authRequired, ctrl.messages.studioMessages)
+router.get('/studio/:studioId', authRequired, ctrl.messages.studioMessages)
 
 
 

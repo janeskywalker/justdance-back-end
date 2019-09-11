@@ -1,67 +1,89 @@
-// const db = require('../models');
-const mockData = require('./mockData').mockData;
-const uuid = require('uuid')
+const db = require('../models');
+// const mockData = require('./mockData').mockData;
+// const uuid = require('uuid')
 
-// creating post for a city
+// creating message for a studio
 const createMessage = (req, res) => {
     console.log("creating message req", req.body)
     const studioId = req.body.studioId
 
     const newMessage = {
-        _id: uuid(),
         content: req.body.content,
-        userId: req.body.userId,
-        studioId: studioId,
+        User: req.body.userId,
+        Studio: studioId,
     };
 
-    mockData.mockMessages.push(newMessage)
+    console.log({newMessage})
 
-    res.send(newMessage)
-
-    // db.Post.create(newPost, (err, savedPost) => {
-    //     console.log('creating new post')
-    //     if (err) return res.status(500).json({ status: 500, message: err});
-    //     res.send(savedPost)
-    // });
+    db.Message.create(newMessage, (err, savedMessage) => {
+        console.log('creating new message');
+        if (err) {
+            return res.status(500).json({ status: 500, message: err});
+        } else {
+            console.log('savedMessage: ', savedMessage);
+            db.Message.findById(savedMessage._id)
+                .populate('User')
+                .exec((error, messageWithUser) => {
+                    if (error) {
+                        return res.status(500).send({ status: 500, message: err});
+                    } else {
+                        // response.sendResponse(res, foundPokemons);
+                        console.log(messageWithUser);
+                        res.send(messageWithUser);
+                    }
+                });
+        }
+    });
 }
 
 const deleteMessage = (req, res) => {
-    mockData.mockMessages = mockData.mockMessages.filter((message) => {
-        return message._id !== req.params._id
-    })
-
-    res.send({ status: 'Success' })
-    // db.Post.findByIdAndDelete(req.params.id, (err, deletedPost) =>{
-    //     console.log('deleting post')
-    //     if (err) return res.status(500).json({ status: 500, message: err});
-    //     res.send(deletedPost)
+    // mockData.mockMessages = mockData.mockMessages.filter((message) => {
+    //     return message._id !== req.params._id
     // })
+
+    // res.send({ status: 'Success' })
+
+    db.Message.findByIdAndDelete(req.params.id, (err, deletedMessage) =>{
+        console.log('deleting message')
+        if (err) return res.status(500).json({ status: 500, message: err});
+        res.send(deletedMessage)
+    })
 } 
 
-// pull posts of a given user
-// const userPosts = (req, res) => {
-//     console.log('getting user post')
-//     // db.Post.find({User: req.params.userId}, (error, foundPosts) => {
-//     //     if (error) return response.sendErrorResponse(res, error);
-//     //     console.log({foundPosts})
-//     //     // response.sendResponse(res, foundCities);
-//     //     res.send(foundPosts.reverse())
-//     // });
-// }
+
+const updateMessage = (req, res) => {
+    const newMessage = {
+        content: req.body.content,
+    };
+
+    db.Message.findByIdAndUpdate(req.params.id, newMessage, { new: true })
+        .populate('User')
+        .exec((err, updatedMessage) =>{
+            if (err) {
+                return res.status(500).json({ status: 500, message: err});
+            } else {
+                res.send(updatedMessage);
+            }
+        })
+} 
+
+
 
 // pull posts of a given city
 const studioMessages = (req, res) => {
     console.log('getting studio messages')
-    // db.Post.find({City: req.params.cityId}, (error, foundPosts) => {
-    //     if (error) return response.sendErrorResponse(res, error);
-    //     console.log({foundPosts})
-    //     // response.sendResponse(res, foundCities);
-    //     res.send(foundPosts.reverse())
-    // });
+    db.Message.find({Studio: req.params.studioId})
+        .populate('User')
+        .exec((error, foundMessages) => {
+            if (error) return response.sendErrorResponse(res, error);
+            console.log('foundMessages: ', foundMessages)
+            // response.sendResponse(res, foundCities);
+            res.send(foundMessages.reverse())
+        });
 
-    res.send(mockData.mockMessages.filter((message) => {
-        return req.params.studioId === message.studioId
-    }))
+    // res.send(mockData.mockMessages.filter((message) => {
+    //     return req.params.studioId === message.studioId
+    // }))
 }
 
 
@@ -75,6 +97,6 @@ const studioMessages = (req, res) => {
 module.exports = {
   createMessage,
   deleteMessage,
-  // userPosts,
   studioMessages,
+  updateMessage,
 };

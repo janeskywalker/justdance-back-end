@@ -1,9 +1,8 @@
 const db = require('../models');
-// const mockData = require('./mockData').mockData
-
 
 // show all studios
 const index = (req, res) => {
+  console.log('server: requsting all studios')
     db.Studio.find({}, (error, foundStudios) => {
         if (error) return res.status(500).send(error);
         console.log({foundStudios})
@@ -20,19 +19,11 @@ const show = (req, res) => {
   db.Studio.findById(req.params.id, (error, foundStudio) => {
     if (error) return res.status(500).send(error);
     // response.sendResponse(res, foundPokemons);
+    console.log(foundStudio)
     res.send(foundStudio)
-    });
+  });
 
 
-    // const studio = mockData.mockStudios.find((studio) => {
-    //     return studio._id === req.params.id
-    // })
-
-    // if (studio) {
-    //     res.send(studio)
-    // } else {
-    //     res.status(404).json({ status: 404, message: 'Studio not found' });
-    // }
 }
 
 // creating post for a city
