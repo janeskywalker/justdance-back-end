@@ -1,6 +1,4 @@
 const db = require('../models');
-// const mockData = require('./mockData').mockData;
-// const uuid = require('uuid')
 
 // creating message for a studio
 const createMessage = (req, res) => {
@@ -37,11 +35,7 @@ const createMessage = (req, res) => {
 }
 
 const deleteMessage = (req, res) => {
-    // mockData.mockMessages = mockData.mockMessages.filter((message) => {
-    //     return message._id !== req.params._id
-    // })
 
-    // res.send({ status: 'Success' })
 
     db.Message.findByIdAndDelete(req.params.id, (err, deletedMessage) =>{
         console.log('deleting message')
@@ -81,9 +75,7 @@ const studioMessages = (req, res) => {
             res.send(foundMessages.reverse())
         });
 
-    // res.send(mockData.mockMessages.filter((message) => {
-    //     return req.params.studioId === message.studioId
-    // }))
+
 }
 
 
