@@ -10,20 +10,7 @@ const uuid = require('uuid');
 const register = (req, res) => {
   const { errors, notValid } = validate(req.body);
 
-  // const newUser = {
-  //   _id: uuid(),
-  //   username: req.body.username,
-  //   email: req.body.email,
-  //   password: req.body.password,
-  // }
 
-  // mockData.mockUsers.push(newUser);
-
-  // res.send({
-  //   _id: newUser._id,
-  //   username: newUser.username,
-  //   email: newUser.email,
-  // })
 
   //Validate Form Data
   if (notValid) {
@@ -86,22 +73,6 @@ const register = (req, res) => {
 const login = (req, res) => {
   console.log('logging in on server')
   console.log('body: ', req.body)
-
-  // const foundUser = mockData.mockUsers.find((user) => {
-  //     return user.email === req.body.email
-  // });
-
-  // console.log('foundUser: ', foundUser)
-
-
-  // if (foundUser) {
-  //     req.session.loggedIn = true;
-  //     req.session.currentUser = foundUser;
-    
-  //     return res.send(foundUser)
-  //   } else {
-  //     return res.status(400).json({ status: 400, message: 'Username or password is incorrect' });
-  //   }
 
 
   if (!req.body.email || !req.body.password) {
