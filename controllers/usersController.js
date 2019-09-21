@@ -16,13 +16,15 @@ const show = (req, res) => {
 
             if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
 
-            db.Post.find({User: req.session.currentUser._id})
-            .populate('City')
-            .exec((err, foundPosts) => {
-                if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
+            res.status(200).json({status: 200, user: foundUser})
 
-                res.status(200).json({ status: 200, user: foundUser, posts:foundPosts });
-            })
+            // db.Post.find({User: req.session.currentUser._id})
+            // .populate('City')
+            // .exec((err, foundPosts) => {
+            //     if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
+
+            //     res.status(200).json({ status: 200, user: foundUser, posts:foundPosts });
+            // })
 
       });    
 };
