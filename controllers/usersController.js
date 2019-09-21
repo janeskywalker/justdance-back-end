@@ -14,9 +14,10 @@ const show = (req, res) => {
 
       db.User.findById(req.session.currentUser._id, { password: 0, __v: 0 },  (err, foundUser) => {
 
-            if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
+        console.log('requesting profile')
+            // if (err) return res.status(500).json({ status: 500, message: 'Something went wrong. Please try again' });
 
-            res.status(200).json({status: 200, user: foundUser})
+            // res.status(200).json({status: 200, user: foundUser})
 
             // db.Post.find({User: req.session.currentUser._id})
             // .populate('City')
