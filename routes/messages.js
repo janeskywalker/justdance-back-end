@@ -21,6 +21,4 @@ router.put('/:id', authRequired, ctrl.messages.updateMessage)
 
 router.get('/studio/:studioId', authRequired, ctrl.messages.studioMessages)
 
-
-
 module.exports = router;

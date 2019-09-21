@@ -5,6 +5,7 @@ const cors = require('cors');
 const app = express();
 const PORT = process.env.PORT || 4000;
 const routes = require('./routes');
+const config = require('./config')
 
 // ---------------------------------------- MIDDLEWARE ---------------------------------------- //
 
@@ -30,7 +31,7 @@ app.use(session({
 
 // cors - cross regin origin 
 const corsOptions = {
-  origin: ['http://localhost:3000'], // string or array --  this is where the frontend is gonna call the route on this port
+  origin: config.corsHosts, // string or array --  this is where the frontend is gonna call the route on this port
   credentials: true, // This allows the session cookie to be sent back and forth
   optionsSuccessStatus: 200 // some legacy browsers (IE11, various SmartTVs) choke on 204
 }
@@ -59,4 +60,4 @@ app.use('/api/v1/messages', routes.messages);
 
 // ---------------------------------------- START SERVER ---------------------------------------- //
 
-app.listen(PORT, () => console.log(`Server running at http://localhost:${PORT}`));
+app.listen(PORT, () => console.log(`Server running at port: ${PORT}`));
