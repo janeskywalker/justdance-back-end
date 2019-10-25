@@ -8,6 +8,7 @@ const uuid = require('uuid');
 
 // POST Register Route
 const register = (req, res) => {
+  console.log("registering")
   const { errors, notValid } = validate(req.body);
 
 
