@@ -21,4 +21,8 @@ router.put('/:id', authRequired, ctrl.messages.updateMessage)
 
 router.get('/studio/:studioId', authRequired, ctrl.messages.studioMessages)
 
+// make a route that takes a time stamp - pull message after that time stamp
+router.get('/studio/:studioId/:timeStamp', authRequired, ctrl.messages.showNewMessages)
+
+
 module.exports = router;

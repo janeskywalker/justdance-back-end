@@ -63,7 +63,7 @@ const updateMessage = (req, res) => {
 
 
 
-// pull posts of a given city
+// pull messages of a given studio
 const studioMessages = (req, res) => {
     console.log('getting studio messages')
     db.Message.find({Studio: req.params.studioId})
@@ -71,16 +71,24 @@ const studioMessages = (req, res) => {
         .exec((error, foundMessages) => {
             if (error) return response.sendErrorResponse(res, error);
             console.log('foundMessages: ', foundMessages)
-            // response.sendResponse(res, foundCities);
             res.send(foundMessages.reverse())
         });
-
-
 }
 
-
-
-
+// pull new messages of a given studio
+const showNewMessages = (req, res) => {
+    console.log('getting new messages')
+    db.Message.find({
+        create_date: { $gt: req.params.timeStamp},
+        Studio: req.params.studioId
+    })
+        .populate('User')
+        .exec((err, newMessages)=>{
+            if(err) return response.sendErrorResponse(res, error);
+            console.log('foundMessages: ', newMessages)
+            res.send(newMessages.reverse())
+        })
+}
 
 
 
@@ -91,4 +99,5 @@ module.exports = {
   deleteMessage,
   studioMessages,
   updateMessage,
+  showNewMessages
 };
